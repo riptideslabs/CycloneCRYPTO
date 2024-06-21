@@ -32,7 +32,9 @@
 #define _MPI_H
 
 //Dependencies
-#include <stdio.h>
+#ifndef __KERNEL__
+   #include <stdio.h>
+#endif
 #include "core/crypto.h"
 
 //Maximum size of a multiple precision integer, in bits
@@ -172,7 +174,17 @@ error_t mpiExpMod(Mpi *r, const Mpi *a, const Mpi *e, const Mpi *p);
 error_t mpiExpModFast(Mpi *r, const Mpi *a, const Mpi *e, const Mpi *p);
 error_t mpiExpModRegular(Mpi *r, const Mpi *a, const Mpi *e, const Mpi *p);
 
+error_t mpiMontgomeryMul(Mpi *r, const Mpi *a, const Mpi *b, uint_t k,
+   const Mpi *p, Mpi *t);
+
+error_t mpiMontgomeryRed(Mpi *r, const Mpi *a, uint_t k, const Mpi *p, Mpi *t);
+
+void mpiMulAccCore(mpi_word_t *r, const mpi_word_t *a, int_t m,
+   const mpi_word_t b);
+
+#ifndef __KERNEL__
 void mpiDump(FILE *stream, const char_t *prepend, const Mpi *a);
+#endif
 
 //C++ guard
 #ifdef __cplusplus
