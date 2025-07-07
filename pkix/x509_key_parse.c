@@ -40,6 +40,8 @@
 #include "hash/sha1.h"
 #include "debug.h"
 
+#include <linux/printk.h>
+
 //Check crypto library configuration
 #if (X509_SUPPORT == ENABLED || PEM_SUPPORT == ENABLED)
 
@@ -68,45 +70,57 @@ error_t x509ParseSubjectPublicKeyInfo(const uint8_t *data, size_t length,
    //Clear the SubjectPublicKeyInfo structure
    osMemset(publicKeyInfo, 0, sizeof(X509SubjectPublicKeyInfo));
 
-   //The public key information is encapsulated within a sequence
-   error = asn1ReadSequence(data, length, &tag);
-   //Failed to decode ASN.1 tag?
-   if(error)
-      return error;
+   // //The public key information is encapsulated within a sequence
+   // error = asn1ReadSequence(data, length, &tag);
+   // //Failed to decode ASN.1 tag?
+   // if(error)
+   // {
+   //    printk("x509ParseSubjectPublicKeyInfo: Failed to decode ASN.1 tag \n");
+   //    return error;
+   // }
 
    //Save the total length of the field
-   *totalLength = tag.totalLength;
+   // *totalLength = tag.totalLength;
 
    //Raw contents of the ASN.1 sequence
-   publicKeyInfo->raw.value = data;
-   publicKeyInfo->raw.length = tag.totalLength;
+   // publicKeyInfo->raw.value = data;
+   // publicKeyInfo->raw.length = tag.totalLength;
 
    //Point to the first field of the sequence
-   data = tag.value;
-   length = tag.length;
+   // data = tag.value;
+   // length = tag.length;
 
-   //Read AlgorithmIdentifier field
-   error = x509ParseAlgoId(data, length, &n, publicKeyInfo);
-   //Any error to report?
-   if(error)
-      return error;
+   // //Read AlgorithmIdentifier field
+   // error = x509ParseAlgoId(data, length, &n, publicKeyInfo);
+   // //Any error to report?
+   // if(error)
+   // {
+   //    printk("x509ParseSubjectPublicKeyInfo: Failed to parse AlgorithmIdentifier \n");
+   //    return error;
+   // }
 
-   //Point to the next field
-   data += n;
-   length -= n;
+   // //Point to the next field
+   // data += n;
+   // length -= n;
 
    //The SubjectPublicKey is encapsulated within a bit string
    error = asn1ReadTag(data, length, &tag);
    //Failed to decode ASN.1 tag?
    if(error)
+   {
+      printk("x509ParseSubjectPublicKeyInfo: Failed to decode ASN.1 tag 2nd\n");
       return error;
+   }
 
    //Enforce encoding, class and type
    error = asn1CheckTag(&tag, FALSE, ASN1_CLASS_UNIVERSAL,
       ASN1_TYPE_BIT_STRING);
    //Invalid tag?
    if(error)
+   {
+      printk("x509ParseSubjectPublicKeyInfo: Invalid tag for ASN.1 type Bit String\n");
       return error;
+   }
 
    //The bit string shall contain an initial octet which encodes the number
    //of unused bits in the final subsequent octet
@@ -121,6 +135,10 @@ error_t x509ParseSubjectPublicKeyInfo(const uint8_t *data, size_t length,
    //number of unused bits)
    publicKeyInfo->rawSubjectPublicKey.value = data;
    publicKeyInfo->rawSubjectPublicKey.length = length;
+   publicKeyInfo->oid.value = EC_PUBLIC_KEY_OID;
+   publicKeyInfo->oid.length = sizeof(EC_PUBLIC_KEY_OID);
+
+   // return x509ParseEcPublicKey(data, length, &publicKeyInfo->ecPublicKey);
 
    //Get the public key algorithm identifier
    oid = publicKeyInfo->oid.value;
@@ -763,6 +781,7 @@ error_t x509ImportEcPublicKey(const X509SubjectPublicKeyInfo *publicKeyInfo,
          //Check status code
          if(!error)
          {
+            printk("EC PUBLIC HERE  KEY %d", publicKey->q.z.size);
             //Debug message
             TRACE_DEBUG("  Public key X:\r\n");
             TRACE_DEBUG_MPI("    ", &publicKey->q.x);

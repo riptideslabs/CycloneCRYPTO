@@ -92,7 +92,10 @@ error_t x509FormatCertRequestInfo(const X509CertRequestInfo *certReqInfo,
       publicKey, NULL, p, &n);
    //Any error to report?
    if(error)
+   {
+      printk("x509FormatSubjectPublicKeyInfo");
       return error;
+   }
 
    //Advance data pointer
    p += n;

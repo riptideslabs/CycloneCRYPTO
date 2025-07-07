@@ -72,6 +72,7 @@ error_t x509CreateCsr(const PrngAlgo *prngAlgo, void *prngContext,
    if(certReqInfo == NULL || subjectPublicKey == NULL ||
       signatureAlgo == NULL || signerPrivateKey == NULL || written == NULL)
    {
+      printk("RETURNING HERE\n");
       return ERROR_INVALID_PARAMETER;
    }
 
@@ -84,7 +85,10 @@ error_t x509CreateCsr(const PrngAlgo *prngAlgo, void *prngContext,
    error = x509FormatCertRequestInfo(certReqInfo, subjectPublicKey, p, &n);
    //Any error to report?
    if(error)
+   {
+      printk("x509FormatCertRequestInfo");
       return error;
+   }
 
    //The ASN.1 DER-encoded CertificationRequestInfo is used as the input to
    //the signature function
@@ -99,7 +103,10 @@ error_t x509CreateCsr(const PrngAlgo *prngAlgo, void *prngContext,
    error = x509FormatSignatureAlgo(signatureAlgo, p, &n);
    //Any error to report?
    if(error)
+   {
+      printk("x509FormatSignatureAlgo");
       return error;
+   }
 
    //Advance data pointer
    p += n;
@@ -111,7 +118,10 @@ error_t x509CreateCsr(const PrngAlgo *prngAlgo, void *prngContext,
       p, &n);
    //Any error to report?
    if(error)
+   {
+      printk("x509FormatSignatureValue");
       return error;
+   }
 
    //Advance data pointer
    p += n;
@@ -128,7 +138,10 @@ error_t x509CreateCsr(const PrngAlgo *prngAlgo, void *prngContext,
    error = asn1WriteTag(&tag, FALSE, output, &n);
    //Any error to report?
    if(error)
+   {
+      printk("asn1WriteTag");
       return error;
+   }
 
    //Total number of bytes that have been written
    *written = n;

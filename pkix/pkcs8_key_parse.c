@@ -39,6 +39,8 @@
 #include "encoding/oid.h"
 #include "debug.h"
 
+#include <linux/printk.h>
+
 //Check crypto library configuration
 #if (PEM_SUPPORT == ENABLED)
 
@@ -690,6 +692,15 @@ error_t pkcs8ParseEcPrivateKey(const uint8_t *data, size_t length,
          if(error)
             return error;
       }
+      // PublicKey attribute?
+      else if(tag.objType == 1)
+      {
+         printk("GATHERING PUBLIC KEY\n");
+         error = x509ParseSubjectPublicKeyInfo(tag.value, tag.length, &tag.totalLength, &ecPrivateKey->publicKeyInfo);
+         if (error)
+            return error;
+         ecPrivateKey->publicKeyInfo.ecParams = *ecParams;
+      }
 
       //Next attribute
       data += tag.totalLength;
@@ -1081,6 +1092,7 @@ error_t pkcs8ImportEcPrivateKey(const Pkcs8PrivateKeyInfo *privateKeyInfo,
          //Check status code
          if(!error)
          {
+            printk("Here comes the slot: %d", privateKey->d.size);
             //Debug message
             TRACE_DEBUG("EC private key:\r\n");
             TRACE_DEBUG_MPI("  ", &privateKey->d);

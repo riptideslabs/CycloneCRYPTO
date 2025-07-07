@@ -78,7 +78,7 @@ error_t pemImportEcPublicKey(const char_t *input, size_t length,
    EcPublicKey *publicKey);
 
 error_t pemImportEcPrivateKey(const char_t *input, size_t length,
-   const char_t *password, EcPrivateKey *privateKey);
+   const char_t *password, EcPrivateKey *privateKey, EcPublicKey *publicKey);
 
 error_t pemImportEddsaPublicKey(const char_t *input, size_t length,
    EddsaPublicKey *publicKey);

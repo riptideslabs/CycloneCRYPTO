@@ -43,6 +43,8 @@
 #include "mpi/mpi.h"
 #include "debug.h"
 
+#include <linux/printk.h>
+
 //Check crypto library configuration
 #if (PEM_SUPPORT == ENABLED)
 
@@ -1161,7 +1163,7 @@ error_t pemImportEcPublicKey(const char_t *input, size_t length,
  **/
 
 error_t pemImportEcPrivateKey(const char_t *input, size_t length,
-   const char_t *password, EcPrivateKey *privateKey)
+   const char_t *password, EcPrivateKey *privateKey, EcPublicKey *publicKey)
 {
 #if (EC_SUPPORT == ENABLED)
    error_t error;
@@ -1252,6 +1254,7 @@ error_t pemImportEcPrivateKey(const char_t *input, size_t length,
          {
             //Read the PrivateKeyInfo structure (refer to RFC 5208, section 5)
             error = pkcs8ParsePrivateKeyInfo(buffer, n, &privateKeyInfo);
+            printk("WE ARE HERE After extracting PUBLIC KEY\n");
          }
 
          //Check status code
@@ -1260,6 +1263,18 @@ error_t pemImportEcPrivateKey(const char_t *input, size_t length,
             //Import the EC private key
             error = pkcs8ImportEcPrivateKey(&privateKeyInfo, privateKey);
          }
+
+         if(!error)
+         {
+            printk("WE ARE HERE IMPORTING PUBLIC KEY\n");
+            // Import the EC Public Key   
+            error = x509ImportEcPublicKey(&privateKeyInfo.ecPrivateKey.publicKeyInfo, publicKey);
+         }
+
+         if (publicKey == NULL)
+            printk("PUBLIC KEY IS NULL inside\n");
+         if (privateKey == NULL)
+            printk("PRIVATE KEY IS NULL inside\n");
 
          //Release previously allocated memory
          cryptoFreeMem(buffer);

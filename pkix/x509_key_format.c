@@ -152,12 +152,14 @@ error_t x509FormatSubjectPublicKeyInfo(const X509SubjectPublicKeyInfo *publicKey
       //Valid EC public key?
       if(publicKey != NULL)
       {
+         printk("FORMATTING EC PUBLIC KEY TO ASN.1 FORMAT\n");
          //Export the EC public key to ASN.1 format
          error = x509ExportEcPublicKey(publicKeyInfo, publicKey,
             p + 1, &n);
       }
       else
       {
+         printk("FORMATTING EC PUBLIC KEY\n");
          //Format ECPublicKey structure
          error = x509FormatEcPublicKey(&publicKeyInfo->ecPublicKey,
             p + 1, &n);

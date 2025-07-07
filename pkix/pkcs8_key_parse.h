@@ -77,6 +77,7 @@ typedef struct
 {
    int32_t version;
    X509OctetString d;
+   X509SubjectPublicKeyInfo publicKeyInfo;
 } Pkcs8EcPrivateKey;
 
 
