@@ -1706,6 +1706,8 @@ void ecTplu(EcState *state, EcPoint3 *r, EcPoint3 *s, const EcPoint3 *p)
 }
 
 
+#ifndef __KERNEL__
+
 /**
  * @brief Display the contents of an integer
  * @param[in] stream Pointer to a FILE object that identifies an output stream
@@ -1738,5 +1740,7 @@ void ecScalarDump(FILE *stream, const char_t *prepend, const uint32_t *a,
       }
    }
 }
+
+#endif
 
 #endif

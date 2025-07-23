@@ -150,8 +150,10 @@ void ecZaddc(EcState *state, EcPoint3 *r, EcPoint3 *s, const EcPoint3 *p,
 void ecDblu(EcState *state, EcPoint3 *r, EcPoint3 *s, const EcPoint3 *p);
 void ecTplu(EcState *state, EcPoint3 *r, EcPoint3 *s, const EcPoint3 *p);
 
+#ifndef __KERNEL__
 void ecScalarDump(FILE *stream, const char_t *prepend, const uint32_t *a,
    uint_t n);
+#endif
 
 //C++ guard
 #ifdef __cplusplus
